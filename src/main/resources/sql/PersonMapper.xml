@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.zhangjava.neo4j.dao.PersonDao">
+
+    <!-- 查询所有数据 -->
+    <select id="selectAll" resultType="com.zhangjava.neo4j.model.Person">
+        match (n:Person)
+        return
+        id(n) as id,
+        n.name as name,
+        n.nickname as nickname,
+        n.age as age
+    </select>
+
+    <!-- 插入数据 -->
+    <insert id="insert">
+        create (n:Person {name:#{name}, age:#{age}, nickname:#{nickname} })
+    </insert>
+
+    <!-- 绑定两个节点之间的关系 -->
+    <insert id="bindRelationship">
+        match (a:Person {name:#{nodeName1} }),
+              (b:Person {name:#{nodeName2} })
+        merge (a)-[:${relationShip}]->(b)
+    </insert>
+
+    <!-- 删除节点，并删除节点之间的关系 -->
+    <delete id="deleteByName">
+        match (n:Person {name:#{nodeName} }) detach delete n
+    </delete>
+
+    <!-- 更新数据 -->
+    <update id="updateById">
+        match (n) where id(n) = #{id}
+        <set>
+            <if test="name != null and name != '' ">
+                n.name = #{name},
+            </if>
+            <if test="nickname != null and nickname != '' ">
+                n.nickname = #{nickname},
+            </if>
+            <if test="age != null and age != '' ">
+                n.age = #{age},
+            </if>
+        </set>
+    </update>
+
+
+</mapper>
+
+

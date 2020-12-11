@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration scan="true" scanPeriod="60 seconds" debug="false">
+    <contextName>logback</contextName>
+    <!-- 日志根路径 -->
+    <property name="log.path" value="./logs"/>
+    <!-- 日志保存时间 -->
+    <property name="maxHistory" value="360"/>
+
+    <!-- 输出到控制台 -->
+    <appender name="console" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <pattern>%d{HH:mm:ss.SSS} %contextName [%thread] %highlight(%-5level) %logger{36} - %highlight%msg%n
+            </pattern>
+        </encoder>
+    </appender>
+
+    <!-- 错误日志 -->
+    <appender name="error" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <!-- 按照小时生成文件，一小时一个文件 -->
+            <fileNamePattern>${log.path}/error/error-%d{yyyy-MM-dd_HH}.log</fileNamePattern>
+            <maxHistory>${maxHistory}</maxHistory>
+        </rollingPolicy>
+        <encoder>
+            <pattern>%d{HH:mm:ss.SSS} %contextName [%thread] %-5level %logger{36} - %msg%n</pattern>
+        </encoder>
+        <!-- 过滤error级别日志 -->
+        <filter class="ch.qos.logback.classic.filter.LevelFilter">
+            <level>ERROR</level>
+            <onMatch>ACCEPT</onMatch>
+            <onMismatch>DENY</onMismatch>
+        </filter>
+    </appender>
+
+    <!--info日志-->
+    <appender name="info" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <!-- 按照小时生成文件，一小时一个文件 -->
+            <fileNamePattern>${log.path}/info/info-%d{yyyy-MM-dd_HH}.log</fileNamePattern>
+            <maxHistory>${maxHistory}</maxHistory>
+        </rollingPolicy>
+        <encoder>
+            <pattern>%d{HH:mm:ss.SSS} %contextName [%thread] %-5level %logger{36} - %msg%n</pattern>
+        </encoder>
+    </appender>
+
+
+    <!-- mybatis输出sql DEBUG:输出sql INFO:关闭输出 -->
+    <logger name="com.zhangjava" level="DEBUG"/>
+
+    <!-- 设置日志级别 -->
+    <root level="INFO">
+        <appender-ref ref="console"/>
+        <appender-ref ref="error"/>
+        <appender-ref ref="info"/>
+    </root>
+
+</configuration>
